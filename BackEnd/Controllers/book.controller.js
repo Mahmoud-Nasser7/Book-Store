@@ -63,19 +63,69 @@ export const getAllBooks = async (req, res) => {
   }
 };
 export const getSingleBook = async (req, res) => {
+  const { id } = req.params;
+
+  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    return res.status(400).json({
+      status: "fail",
+      data: { error: "Invalid book ID format" },
+    });
+  }
+
+  try {
+    const book = await Book.findById(id);
+
+    if (!book) {
+      return res.status(404).json({
+        status: "fail",
+        data: { error: "Book not found" },
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: book,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "An unexpected error occurred while fetching the book",
+      data: { error: error.message },
+    });
+  }
+};
+
+export const updateBook = async (req, res) => {
     const { id } = req.params;
-  
-    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      if (!id.match(/^[0-9a-fA-F]{24}$/)) {
       return res.status(400).json({
         status: "fail",
         data: { error: "Invalid book ID format" },
       });
     }
   
-    try {
-      const book = await Book.findById(id);
+    const { title, author, publicationYear } = req.body;
+      if (
+      !title ||
+      !author ||
+      !publicationYear ||
+      title.trim() === "" ||
+      author.trim() === "" 
+    ) {
+      return res.status(400).json({
+        status: "fail",
+        data: { error: "All fields are required" },
+      });
+    }
   
-      if (!book) {
+    try {
+      const updatedBook = await Book.findByIdAndUpdate(
+        id,
+        { title, author, publicationYear },
+        { new: true, runValidators: true } 
+      );
+  
+      if (!updatedBook) {
         return res.status(404).json({
           status: "fail",
           data: { error: "Book not found" },
@@ -84,14 +134,14 @@ export const getSingleBook = async (req, res) => {
   
       return res.status(200).json({
         status: "success",
-        data: book,
+        data: updatedBook,
       });
     } catch (error) {
       return res.status(500).json({
         status: "error",
-        message: "An unexpected error occurred while fetching the book",
+        message: "An unexpected error occurred while updating the book",
         data: { error: error.message },
       });
     }
   };
-
+  

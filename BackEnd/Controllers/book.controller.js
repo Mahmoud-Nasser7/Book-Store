@@ -145,3 +145,35 @@ export const updateBook = async (req, res) => {
     }
   };
   
+  export const deleteBook = async (req, res) => {
+    const { id } = req.params;
+  
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({
+        status: "fail",
+        data: { error: "Invalid book ID format" },
+      });
+    }
+  
+    try {
+      const book = await Book.findOneAndDelete({ _id: id });
+  
+      if (!book) {
+        return res.status(404).json({
+          status: "fail",
+          data: { error: "Book not found" },
+        });
+      }
+  
+      return res.status(200).json({
+        status: "success",
+        data: { message: "Book deleted successfully" },
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: "error",
+        message: "An unexpected error occurred while deleting the book",
+        data: { error: error.message },
+      });
+    }
+  };

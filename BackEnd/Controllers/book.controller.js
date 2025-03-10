@@ -38,3 +38,27 @@ export const addBook = async (req, res) => {
     });
   }
 };
+
+export const getAllBooks = async (req, res) => {
+  try {
+    const books = await Book.find();
+
+    if (books.length === 0) {
+      return res.status(200).json({
+        status: "success",
+        data: [],
+        message: "No books found",
+      });
+    }
+    return res.status(200).json({
+      status: "success",
+      data: books,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "An unexpected error occurred while fetching books",
+      data: { error: error.message },
+    });
+  }
+};

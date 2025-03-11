@@ -29,7 +29,7 @@ const Table = ({books}) => {
     </thead>
     <tbody>
         {books.map((book, index) => (
-      <tr key={book.id} className="bg-white border-b border-gray-200">
+      <tr key={book._id} className="bg-white border-b border-gray-200">
         <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
           {index+1}
         </th>
